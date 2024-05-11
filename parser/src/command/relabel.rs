@@ -215,6 +215,51 @@ fn parse_no_dot() {
 }
 
 #[test]
+fn parse_decimal_format() {
+    assert_eq!(
+        parse("label +A-macros-2.0"),
+        Ok(Some(vec![LabelDelta::Add(Label("A-macros-2.0".into())),]))
+    );
+}
+
+#[test]
+fn parse_decimal_format_and_after() {
+    assert_eq!(
+        parse("label +A-macros-2.0-after"),
+        Ok(Some(vec![LabelDelta::Add(Label(
+            "A-macros-2.0-after".into()
+        )),]))
+    );
+}
+
+#[test]
+fn parse_semver() {
+    assert_eq!(
+        parse("label +A-rust1.78.0"),
+        Ok(Some(vec![LabelDelta::Add(Label("A-rust1.78.0".into())),]))
+    );
+}
+
+#[test]
+fn parse_dotted_label() {
+    assert_eq!(
+        parse("label +A.this.is.a.label"),
+        Ok(Some(vec![LabelDelta::Add(Label(
+            "A.this.is.a.label".into()
+        )),]))
+    );
+}
+#[test]
+fn dont_parse_dot_at_end() {
+    assert_eq!(
+        parse("label +A-macros-2.0-after."),
+        Ok(Some(vec![LabelDelta::Add(Label(
+            "A-macros-2.0-after".into()
+        )),]))
+    );
+}
+
+#[test]
 fn parse_to_colon() {
     assert_eq!(
         parse("modify labels to: +T-compiler -T-lang bug"),

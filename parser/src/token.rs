@@ -105,7 +105,21 @@ impl<'a> Tokenizer<'a> {
     fn cur_punct(&mut self) -> Option<Token<'static>> {
         let (_, ch) = self.cur()?;
         match ch {
-            '.' => Some(Token::Dot),
+            '.' => {
+                // If we are not at the end of the input, and the next char is
+                // alphanumeric, then this `.` is not meant to be punctuation
+                // example: "A-macros-2.0"
+                if self
+                    .input
+                    .chars()
+                    .nth(self.cur_pos() + 1)
+                    .is_some_and(|v| v.is_ascii_alphanumeric())
+                {
+                    None
+                } else {
+                    Some(Token::Dot)
+                }
+            }
             ',' => Some(Token::Comma),
             ':' => Some(Token::Colon),
             '!' => Some(Token::Exclamation),
